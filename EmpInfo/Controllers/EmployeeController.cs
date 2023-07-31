@@ -51,8 +51,9 @@ namespace EmpInfo.Controllers {
             return PartialView("Partial/_AddEmployee", employee);
         }
         [HttpPost]
-        public async Task<IActionResult> saveEmployee(EmployeeViewModel employeeViewModel)
+        public int saveEmployee(EmployeeViewModel employeeViewModel)
         {
+            int id = 0;
             try
             {
                 using (SqlConnection connection = new("Server=localhost;Database=Employee;Trusted_Connection=True;"))
@@ -64,21 +65,21 @@ namespace EmpInfo.Controllers {
                         CommandTimeout = 600,
                         CommandType = CommandType.StoredProcedure
                     };
-                    command.Parameters.AddWithValue("id", employeeViewModel.Id == 0 ? employeeViewModel.Id + 2 : 0);
+                    command.Parameters.AddWithValue("id", employeeViewModel.Id);
                     command.Parameters.AddWithValue("@first_name", employeeViewModel.FirstName);
                     command.Parameters.AddWithValue("@last_name", employeeViewModel.LastName);
                     command.Parameters.AddWithValue("@City", employeeViewModel.City);
                     command.Parameters.AddWithValue("@Zip", employeeViewModel.Zip);
                     command.Parameters.AddWithValue("@CreateDate", employeeViewModel.CreatedDate);
-                    command.ExecuteNonQuery();
+                    id = command.ExecuteNonQuery();
                     connection.Close();
                 }
 
-                return Ok("DataSaved");
+                return id;
             }
             catch (Exception ex)
             {
-                return Ok(ex.Message.ToString());
+                return id;
             }
         }
     }

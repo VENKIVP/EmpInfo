@@ -1,5 +1,5 @@
 ﻿@model EmployeeViewModel
-
+<input type="hidden" id="emp_Id" value="4"/>
 <input type="button" class="button" value="Add Employee" onclick="addEmployee();"/>
 <div id="addEmployee" style="display:none;">
     <partial name="~/views/employee/partial/addemployee.cshtml" model="@Model" />
@@ -103,12 +103,14 @@
                     date = date.split('/')[1] + '/' + date.split('/')[0] + '/' + date.split('/')[2];
                 }
             }
+            var id = $("#emp_Id").val();
             var employeeListViewModel = {
                 firstName : fName,
                 lastName : lname,
                 city: cityN,
                 zip: zipC,
-                createdDate: date
+                createdDate: date,
+                id:id
             };
             $.ajax({
                 type: "POST",
@@ -117,6 +119,7 @@
                 cache: false,
                 success: function (result) {
                     $("#addEmployee").hide();
+                    $("#emp_Id").val(result.id);
                 },
                 error: function (err) {
                     
