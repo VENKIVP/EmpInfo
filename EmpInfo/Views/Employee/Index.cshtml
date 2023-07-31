@@ -1,0 +1,137 @@
+﻿@model EmployeeViewModel
+
+<input type="button" class="button" value="Add Employee" onclick="addEmployee();"/>
+<div id="addEmployee" style="display:none;">
+    <partial name="~/views/employee/partial/addemployee.cshtml" model="@Model" />
+</div>
+<div class="inner-container">
+    <div class="fixdiv">
+    </div>
+</div>
+<table id="employeeTable" class="display row-border hover dataTable resizableDataTable" style="visibility: visible;table-layout:auto !important;" role="grid" cellspacing="0" cellpadding="0" border="0">
+  
+    <thead>
+        <tr class="rowHead">
+            <th class="idCol align-left" title="UserName">
+                Id
+            </th>
+            <th class="firstNameCol align-left" title="Type">
+               FirstName
+            </th>
+            <th class="lastNameCol align-left" title="Email">
+                LastName
+            </th>
+            <th class="cityCol align-left" title="PayrollItems">
+                City
+            </th>
+            <th class="zipCol align-left" title="Source">
+                Zip
+            </th>
+            <th class="dateCol align-left" title="Source">
+                CreatedDate
+            </th>
+            <th>
+                
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+@section Scripts {
+    <partial name="~/views/employee/partial/datatables/functions.cshtml" model="@Model" />
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            dtInterval = setInterval(function () {
+                clearInterval(dtInterval);
+                setCreateDate('');
+                $(() => {
+                    var table = $("#employeeTable tbody");
+
+                    $.ajax({
+                        url: '@Url.Action("datatablesearch", "employee")',
+                        dataType: "json",
+                        type: 'GET',
+                        cache: false,
+                        success: function (data) {
+                            var array = data.length;
+                            for(var i=0;i<array;i++){
+                                table.append("<tr><td>" + data[i].id + "</td>" +
+                                    "<td>" + data[i].firstName + "</td>" +
+                                    "<td>" + data[i].lastName + "</td>" +
+                                    "<td>" + data[i].city + "</td>" +
+                                    "<td>" + data[i].zip + "</td>" +
+                                    "<td>" + data[i].createdDate + "</td>" +
+                                    "<td>"  +"<input type='button' class='viewbutton' value='View Salary' />"+"</td></tr>")
+                            }
+                        }
+                    });
+                });
+
+            });
+        });
+
+    function addEmployee(){
+        $('#addEmployee').load('@Url.Action("addEmployee", "employee")', function (responseTxt, statusTxt, xhr) {
+            $("#addEmployee").show();
+            console.log(statusTxt);
+        });
+    }
+    function cancel(){
+        resetEmployee();
+        $("#addEmployee").hide();
+    }
+    function resetEmployee(){
+        $("#txtZip").val('');
+        $("#txtCity").val('');
+        $("#txtLastName").val('');
+        $("#txtFirstName").val('');
+        $("#txtcreateDate").val('');
+    }
+        var dateFormat = 'dd/MM/yyyy';
+    function saveEmployee(){
+        var zipC = $("#txtZip").val();
+        var cityN = $("#txtCity").val();
+        var lname = $("#txtLastName").val();
+        var fName = $("#txtFirstName").val();
+        var date = $("#txtcreateDate").val();
+            if (dateFormat.toLowerCase().indexOf('mm') == 3) {
+                if (dateFormat.includes('/')) {
+                    date = date.split('/')[1] + '/' + date.split('/')[0] + '/' + date.split('/')[2];
+                }
+            }
+            var employeeListViewModel = {
+                firstName : fName,
+                lastName : lname,
+                city: cityN,
+                zip: zipC,
+                createdDate: date
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("saveEmployee", "employee")',
+                data: employeeListViewModel,
+                cache: false,
+                success: function (result) {
+                    $("#addEmployee").hide();
+                },
+                error: function (err) {
+                    
+                }
+            });
+    }
+    
+    function setCreateDate(val) {
+        var today = (val == '') ? new Date() : new Date(val);
+        var date;
+        currentDay = today.getDate() < 10 ? '0' + today.getDate() : today.getDate(),
+        currentMonth = today.getMonth() < 9 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1);
+        currentYear = today.getFullYear();
+        date = currentMonth + '/' + currentDay + '/' + currentYear;
+        $('#txtcreateDate').val(date);
+    }
+</script>
+}
