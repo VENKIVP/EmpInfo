@@ -157,6 +157,7 @@
         };
         function addSalary(id) {
             var table = $("#employeeSaalryTable tbody");
+            table.empty()
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("addSalary", "employee")?id=' + id,
