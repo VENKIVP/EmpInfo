@@ -2,7 +2,7 @@
 
 <div id="overlay" class="userDetailsOverlay"></div>
 <div class="employeeDetailsAdd">
-    <div class="popUp">
+    <div id="list" class="popUp">
         <h2 class="fixdiv h2Center">
             Add Monthly Salary
         </h2>
@@ -32,10 +32,35 @@
                 <input type="text" id="txtSalarycreateDate" disabled="disabled"/>
             </div>
         </div>
-        <div style="float:right">
-            <input type="button" title="cancel" id="cancel" class="ctrl_btn" value="Cancel" ToolTip="Cancel" onclick="cancelSalary();" />
-            <input type="submit" title="save" id="saveEmployee" class="ctrl_btn" value="Save" ToolTip="Save" onclick="saveSalary();" />
+    </div>
+    <div class="inner-container">
+        <div class="fixdiv">
         </div>
+    </div>
+    <h2 id="records" class="fixdiv h2Center">Employee Salary records</h2>
+    <table id="employeeSaalryTable" class="display row-border hover dataTable resizableDataTable" style="visibility: visible;" role="grid" cellspacing="0" cellpadding="0" border="0">
 
+        <thead>
+            <tr class="rowHead">
+                <th class="idCol align-left" title="EmployeeId">
+                    Id
+                </th>
+                <th class="amountCol align-left" title="Amount">
+                    Amount
+                </th>
+                <th class="SalaryDateCOl align-left" title="SalaryDate">
+                    salaryDate
+                </th>
+                <th class="CreateddateCol align-left" title="CreatedDate">
+                    CreatedDate
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table> 
+    <div style="float:right">
+        <input type="button" title="cancel" id="cancel" class="ctrl_btn" value="Cancel" ToolTip="Cancel" onclick="cancelSalary();" />
+        <input type="submit" title="save" id="saveEmployee" class="ctrl_btn" value="Save" ToolTip="Save" onclick="saveSalary();" />
     </div>
 </div>

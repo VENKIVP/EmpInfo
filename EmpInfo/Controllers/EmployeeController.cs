@@ -109,13 +109,13 @@ namespace EmpInfo.Controllers {
                 SqlConnection conn = new SqlConnection("Server=localhost;Database=Employee;Trusted_Connection=True;");
                 conn.Open();
 
-                SqlCommand command = new SqlCommand("SELECT * FROM dbo.EmpSalary1 where Id =" + id, conn);
+                SqlCommand command = new SqlCommand("SELECT * FROM dbo.EmpSalary1 where EmployeeId =" + id, conn);
                 DataTable dt = new DataTable();
                 dt.Load(command.ExecuteReader());
-                List<EmployeeSalary> data = new List<EmployeeSalary>();
+                List<EmployeeRecords> data = new List<EmployeeRecords>();
                 foreach (DataRow row in dt.Rows)
                 {
-                    EmployeeSalary dataItem = new EmployeeSalary
+                    EmployeeRecords dataItem = new EmployeeRecords
                     {
                         Id = Convert.ToInt32(row["Id"]),
                         EmployeeId = Convert.ToInt32(row["EmployeeId"]),
@@ -125,7 +125,7 @@ namespace EmpInfo.Controllers {
                     };
                     data.Add(dataItem);
                 }
-                employee.Salary = data.FirstOrDefault();
+                employee.Records = data;
             }
             r.View = PartialView("Partial/AddEmployeeSalary", employee);
 

@@ -64,13 +64,13 @@
                         success: function (data) {
                             var array = data.length;
                             for(var i=0;i<array;i++){
-                                table.append("<tr><td onclick='addEmployee(" + JSON.stringify(data[i].id) + ")'>" + data[i].id + "</td>" +
+                                table.append("<tr><td class='blueLink' onclick='addEmployee(" + JSON.stringify(data[i].id) + ")'>" + data[i].id + "</td>" +
                                     "<td>" + data[i].firstName + "</td>" +
                                     "<td>" + data[i].lastName + "</td>" +
                                     "<td>" + data[i].city + "</td>" +
                                     "<td>" + data[i].zip + "</td>" +
                                     "<td>" + data[i].createdDate + "</td>" +
-                                    "<td>" + "<input type='button' class='viewbutton' value='View Salary' onclick='addSalary(" + JSON.stringify(data[i].id) + ")' />" + "</td></tr>")
+                                    "<td>" + "<input type='button' class='viewbutton' value='Show Salary' onclick='addSalary(" + JSON.stringify(data[i].id) + ")' />" + "</td></tr>")
                             }
                         }
                     });
@@ -92,7 +92,7 @@
                         $("#txtCity").val(jsReturnArgs.view.model.city);
                         $("#txtLastName").val(jsReturnArgs.view.model.lastName);
                         $("#txtFirstName").val(jsReturnArgs.view.model.firstName);
-                        $("#txtcreateDate").val(jsReturnArgs.view.model.createdDate);                        
+                        setCreateDate(jsReturnArgs.view.model.createdDate);
                     }
                     else{
                         setCreateDate('');
@@ -156,32 +156,32 @@
             return new Date(str);
         };
         function addSalary(id) {
-
+            var table = $("#employeeSaalryTable tbody");
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("addSalary", "employee")?id=' + id,
                 cache: false,
                 success: function (jsReturnArgs) {
                     $("#addSalary").html(jsReturnArgs.View);
-                    if (jsReturnArgs.view.model.salary.id != 0) {
-                        $("#txtEmpId").val(jsReturnArgs.view.model.salary.employeeId);
-                        $("#txtAmount").val(jsReturnArgs.view.model.salary.amount);
-                        var Sdate = new Date(jsReturnArgs.view.model.salary.salaryDate);
-                        currentDay = Sdate.getDate() < 10
-                            ? '0' + Sdate.getDate()
-                            : Sdate.getDate(),
-                            currentMonth = Sdate.getMonth() < 9
-                                ? '0' + (Sdate.getMonth() + 1)
-                                : (Sdate.getMonth() + 1);
-                        currentYear = Sdate.getFullYear();
-                        Sdate = currentDay + '/' + currentMonth + '/' + currentYear;
-                        $("#txtSalaryDate").val(Sdate);
-                        $("#txtSalarycreateDate").val(jsReturnArgs.view.model.salary.createdDate);
+                    if (jsReturnArgs.view.model.records.length > 0) {
+                        var count = jsReturnArgs.view.model.records.length;
+                        for (var i = 0; i < count;i++){
+                            table.append("<tr><td>" + jsReturnArgs.view.model.records[i].employeeId + "</td>" +
+                                "<td>" + jsReturnArgs.view.model.records[i].amount + "</td>" +
+                                "<td>" + jsReturnArgs.view.model.records[i].salaryDate + "</td>" +
+                                "<td>" + jsReturnArgs.view.model.records[i].createdDate + "</td></tr>")
+                        }
+                        $("#list").hide();
+                        $("#employeeSaalryTable").show();
+                        $("#records").show();
                     }
                     else {
                         setCreateDate('');
+                        $("#list").show();
+                        $("#employeeSaalryTable").hide();
+                        $("#records").hide();
                     }
-                    $("#addSalary").show();
+                    $("#addSalary").show();                    
                 },
                 error: function (err) {
 
@@ -244,6 +244,15 @@
         date = currentMonth + '/' + currentDay + '/' + currentYear;
         $('#txtcreateDate').val(date);
         $('#txtSalarycreateDate').val(date);
+    }
+    function setSalaryDate(val) {
+        var today = (val == '') ? new Date() : new Date(val);
+        var date;
+        currentDay = today.getDate() < 10 ? '0' + today.getDate() : today.getDate(),
+            currentMonth = today.getMonth() < 9 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1);
+        currentYear = today.getFullYear();
+            date = currentYear + '-' + currentMonth + '-' + currentDay;
+            $('#txtSalaryDate').val(date).trigger('change');
     }
 </script>
 }

@@ -1021,3 +1021,9 @@ input[type="text"] {
     overflow-x: hidden;
     height: 60vh;
 }
+.blueLink {
+    color: rgb(9, 105, 218);
+    text-decoration: none;
+    font-weight: 400;
+    cursor:pointer;
+}
