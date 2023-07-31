@@ -1,8 +1,13 @@
 ﻿@model EmployeeViewModel
-<input type="hidden" id="emp_Id" value="4"/>
-<input type="button" class="button" value="Add Employee" onclick="addEmployee();"/>
+<input type="hidden" id="emp_Id" value="@Model.Total"/>
+<input type="hidden" id="emp_Id1" value="@Model.Salary.Total" />
+<input type="button" class="button" value="Add Employee" onclick="addEmployee('');"/>
+<input type="button" class="button" value="Add Salary" onclick="addSalary('')"/>
 <div id="addEmployee" style="display:none;">
     <partial name="~/views/employee/partial/addemployee.cshtml" model="@Model" />
+</div>
+<div id="addSalary" style="display:none;">
+    <partial name="~/views/employee/partial/addemployeesalary.cshtml" model="@Model" />
 </div>
 <div class="inner-container">
     <div class="fixdiv">
@@ -59,13 +64,13 @@
                         success: function (data) {
                             var array = data.length;
                             for(var i=0;i<array;i++){
-                                table.append("<tr><td>" + data[i].id + "</td>" +
+                                table.append("<tr><td onclick='addEmployee(" + JSON.stringify(data[i].id) + ")'>" + data[i].id + "</td>" +
                                     "<td>" + data[i].firstName + "</td>" +
                                     "<td>" + data[i].lastName + "</td>" +
                                     "<td>" + data[i].city + "</td>" +
                                     "<td>" + data[i].zip + "</td>" +
                                     "<td>" + data[i].createdDate + "</td>" +
-                                    "<td>"  +"<input type='button' class='viewbutton' value='View Salary' />"+"</td></tr>")
+                                    "<td>" + "<input type='button' class='viewbutton' value='View Salary' onclick='addSalary(" + JSON.stringify(data[i].id) + ")' />" + "</td></tr>")
                             }
                         }
                     });
@@ -73,11 +78,30 @@
 
             });
         });
+        
+    function addEmployee(id){
+        
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("addEmployee", "employee")?id=' + id,
+            cache: false,
+            success: function (jsReturnArgs) {
+                $("#addEmployee").html(jsReturnArgs.View);
+                    if (jsReturnArgs.view.model.id != 0){
+                        $("#txtZip").val(jsReturnArgs.view.model.zip);
+                        $("#txtCity").val(jsReturnArgs.view.model.city);
+                        $("#txtLastName").val(jsReturnArgs.view.model.lastName);
+                        $("#txtFirstName").val(jsReturnArgs.view.model.firstName);
+                        $("#txtcreateDate").val(jsReturnArgs.view.model.createdDate);                        
+                    }
+                    else{
+                        setCreateDate('');
+                    }
+                    $("#addEmployee").show();
+            },
+            error: function (err) {
 
-    function addEmployee(){
-        $('#addEmployee').load('@Url.Action("addEmployee", "employee")', function (responseTxt, statusTxt, xhr) {
-            $("#addEmployee").show();
-            console.log(statusTxt);
+            }
         });
     }
     function cancel(){
@@ -126,6 +150,90 @@
                 }
             });
     }
+        const getDateFromString = str => {
+            const [date, time] = str.split(" ");
+            str = `${date}T${time}.000Z`
+            return new Date(str);
+        };
+        function addSalary(id) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("addSalary", "employee")?id=' + id,
+                cache: false,
+                success: function (jsReturnArgs) {
+                    $("#addSalary").html(jsReturnArgs.View);
+                    if (jsReturnArgs.view.model.salary.id != 0) {
+                        $("#txtEmpId").val(jsReturnArgs.view.model.salary.employeeId);
+                        $("#txtAmount").val(jsReturnArgs.view.model.salary.amount);
+                        var Sdate = new Date(jsReturnArgs.view.model.salary.salaryDate);
+                        currentDay = Sdate.getDate() < 10
+                            ? '0' + Sdate.getDate()
+                            : Sdate.getDate(),
+                            currentMonth = Sdate.getMonth() < 9
+                                ? '0' + (Sdate.getMonth() + 1)
+                                : (Sdate.getMonth() + 1);
+                        currentYear = Sdate.getFullYear();
+                        Sdate = currentDay + '/' + currentMonth + '/' + currentYear;
+                        $("#txtSalaryDate").val(Sdate);
+                        $("#txtSalarycreateDate").val(jsReturnArgs.view.model.salary.createdDate);
+                    }
+                    else {
+                        setCreateDate('');
+                    }
+                    $("#addSalary").show();
+                },
+                error: function (err) {
+
+                }
+            });
+        }
+        function cancelSalary() {
+            resetSalary();
+            $("#addSalary").hide();
+        }
+        function resetSalary() {
+            $("#txtEmpId").val('');
+            $("#txtSalaryDate").val('');
+            $("#txtAmount").val('');
+            $("#txtSalarycreateDate").val('');
+        }
+        var dateFormat = 'dd/MM/yyyy';
+        function saveSalary() {
+            var empId = $("#txtEmpId").val();
+            var sdate = $("#txtSalaryDate").val();
+            var amount = $("#txtAmount").val();
+            var cDate = $("#txtSalarycreateDate").val();
+            if (dateFormat.toLowerCase().indexOf('mm') == 3) {
+                if (dateFormat.includes('/')) {
+                    cDate = cDate.split('/')[1] + '/' + cDate.split('/')[0] + '/' + cDate.split('/')[2];
+                }
+            }
+            var id = $("#emp_Id1").val();
+            var salary = {
+                Id:id,
+                EmployeeId: empId,
+                Amount: amount,
+                SalaryDate: sdate,
+                CreatedDate: cDate
+            }
+            var employeeListViewModel = {
+                Salary: salary
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("saveSalary", "employee")',
+                data: employeeListViewModel,
+                cache: false,
+                success: function (result) {
+                    $("#addSalary").hide();
+                    $("#emp_Id1").val(result.id);
+                },
+                error: function (err) {
+
+                }
+            });
+        }
     
     function setCreateDate(val) {
         var today = (val == '') ? new Date() : new Date(val);
@@ -135,6 +243,7 @@
         currentYear = today.getFullYear();
         date = currentMonth + '/' + currentDay + '/' + currentYear;
         $('#txtcreateDate').val(date);
+        $('#txtSalarycreateDate').val(date);
     }
 </script>
 }

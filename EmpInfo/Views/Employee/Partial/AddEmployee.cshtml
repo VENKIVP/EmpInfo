@@ -1,4 +1,6 @@
-﻿<div id="overlay" class="userDetailsOverlay"></div>
+﻿@model EmployeeViewModel
+
+<div id="overlay" class="userDetailsOverlay"></div>
 <div class="employeeDetailsAdd">
     <div class="popUp">
         <h2 class="fixdiv h2Center">
@@ -9,31 +11,32 @@
                 <span>Created Date</span>
             </div>
             <div class="margin-top5">
-                <input type="text" id="txtcreateDate" disabled="disabled"/>
+                <input type="text" id="txtcreateDate" disabled="disabled" value=@Model.CreatedDate/>
             </div>
             <div class="margin-top10">
                 <span>First Name</span>
             </div>
+            
             <div class="margin-top5">
-                <input type="text" id="txtFirstName" />
+                <input type="text" id="txtFirstName" value=@Model.FirstName />
             </div>
             <div class="margin-top10">
                 <span>Last Name</span>
             </div>
             <div class="margin-top5">
-                <input type="text" id="txtLastName" />
+                <input type="text" id="txtLastName" value=@Model.LastName/>
             </div>
             <div class="margin-top10">
                 <span>City</span>
             </div>
             <div class="margin-top5">
-                <input type="text" id="txtCity" />
+                <input type="text" id="txtCity" value=@Model.City/>
             </div>
             <div class="margin-top10">
                 <span>Zip</span>
             </div>
             <div class="margin-top5">
-                <input type="text" id="txtZip" />
+                <input type="text" id="txtZip" value=@Model.Zip/>
             </div>
         </div>
         <div style="float:right">
